@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\API\AutController;
+use App\Http\Controllers\API\v1\GameController;
+use App\Http\Controllers\API\v1\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,22 +19,37 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::post('v1/games/{id}/scores',[GameController::class,'score']);
-Route::get('v1/games/{id}/scores',[GameController::class,'scores']);
-Route::post('v1/games',[GameController::class,'indexpost']);
-Route::get('v1/games',[GameController::class,'indexget']);
+Route::get('',[Controller::class,'index']);
+
+Route::post('v1/game',[GameController::class,'indexpost']);
+
+Route::get('v1/games',[GameController::class,'index']);
+
 Route::get('v1/games/{id}',[GameController::class,'game']);
 Route::delete('v1/games/{id}',[GameController::class,'destroy']);
-Route::put('v1/games/{id}',[GameController::class,'put']);
-Route::get('v1/games/{id}/:version/',[GameController::class,'version']);
-Route::post('v1/games/{id}/upload',[GameController::class,'upload']);
 
-Route::get('v1/users/{id}',[UserController::class,'index']);
+
+Route::post('v1/games/{id}/update',[GameController::class,'update']);
+
+
+Route::get('v1/games/{id}',[GameController::class,'show']);
+Route::get('v1/games/{id}/version/',[GameController::class,'version']);
+Route::post('v1/games/{id}/upload',[GameController::class,'upload']);
+Route::post('v1/games/{id}/scores',[GameController::class,'score']);
+Route::get('v1/games/{id}/scores',[GameController::class,'scores']);
+
+Route::post('v1/games/create',[GameController::class,'createGame']);
+
+Route::get('v1/users/{id}',[UserController::class,'show']);
+
+Route::post('v1/auth/register',[UserController::class,'register']);
+Route::post('v1/auth/logout',[UserController::class,'logout']);
+
+
 Route::post('v1/auth/signout',[AutController::class,'signout']);
-Route::post('v1/auth/signin',[AutController::class,'signin']);
+Route::get('v1/auth/signin',[AutController::class,'index']);
 Route::post('v1/auth/signup',[AutController::class,'singup']);
 
-Route::get('',[Controller::class,'index']);
 
 //Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //    return $request->user();
