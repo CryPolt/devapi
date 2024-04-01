@@ -20,10 +20,12 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('thumbnail')->nullable();
             $table->timestamp('upload_timestamp')->nullable();
-            $table->string('author')->nullable();
+            $table->unsignedBigInteger('author');
             $table->integer('score_count')->default(0);
             $table->integer('popular')->default(0);
             $table->timestamps();
+
+
 
         });
     }

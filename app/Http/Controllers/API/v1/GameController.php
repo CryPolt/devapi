@@ -7,6 +7,7 @@ namespace App\Http\Controllers\API\v1;
 use App\Models\Game;
 use App\Providers\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class GameController
 {
@@ -85,33 +86,42 @@ class GameController
         ], 200);
     }
 
-    public function createGame(Request $request) {
-        // Ensure that the user making the request is authenticated
-        $user = $request->user();
-        if (!$user) {
-            return response()->json(['status' => 'error', 'message' => 'User not authenticated'], 401);
-        }
 
-        // Validate the request data
+    public function createGame(Request $request): \Illuminate\Http\JsonResponse
+    {
+        if (!Auth::guard('sanctum')->check()) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
         $validatedData = $request->validate([
             'slug' => '',
             'title' => '',
             'description' => '',
             'thumbnail' => '',
             'upload_timestamp' => '',
-            'author' => '',
             'score_count' => '',
-            'popular' => ''
-            // Add more validation rules as needed
+            'popular' => '',
+            'author' => ''
+
         ]);
 
-        // Create a new game associated with the authenticated user
-        $game = new Game($validatedData);
-        $game->user_id = $user->id; // Assign the authenticated user's ID
+        $user = Auth::guard('sanctum')->user();
+        $user = User::all();
+        $game = Game::create([
+            'slug' => $validatedData['slug'],
+            'title' => $validatedData['title'],
+            'description' => $validatedData['description'],
+            'thumbnail' => $validatedData['thumbnail'],
+            'upload_timestamp' => $validatedData['upload_timestamp'],
+            'author' => $validatedData['author'], // Assuming 'id' is the primary key of the user
+            'score_count' => $validatedData['score_count'],
+            'popular' => $validatedData['popular']
+        ]);
+
+        // Save the game
         $game->save();
 
         return response()->json(['status' => 'success', 'game' => $game]);
-    }       
+    }
 
 
 }
