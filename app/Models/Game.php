@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Providers\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class Game extends Model
 {
@@ -13,7 +13,8 @@ class Game extends Model
 
 
     protected $fillable = ['slug', 'title', 'description', 'thumbnail', 'upload_timestamp', 'author', 'score_count', 'popular'];
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 }

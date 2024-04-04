@@ -39,7 +39,8 @@ Route::post('v1/games/{id}/upload',[GameController::class,'upload']);
 Route::post('v1/games/{id}/scores',[GameController::class,'score']);
 Route::get('v1/games/{id}/scores',[GameController::class,'scores']);
 
-Route::post('v1/games/create', [GameController::class, 'createGame']);
+Route::middleware('auth:sanctum')->post('v1/games/create',[GameController::class, 'createGame']);
+
 
 Route::get('v1/users/{id}',[UserController::class,'show']);
 

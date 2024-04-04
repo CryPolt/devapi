@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API\v1;
 
 
 use App\Models\Game;
-use App\Providers\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -89,39 +88,30 @@ class GameController
 
     public function createGame(Request $request): \Illuminate\Http\JsonResponse
     {
+
         if (!Auth::guard('sanctum')->check()) {
             return response()->json(['error' => 'Unauthenticated'], 401);
         }
-        $validatedData = $request->validate([
-            'slug' => '',
-            'title' => '',
-            'description' => '',
-            'thumbnail' => '',
-            'upload_timestamp' => '',
-            'score_count' => '',
-            'popular' => '',
-            'author' => ''
-
-        ]);
-
+        $user = auth()->user();
         $user = Auth::guard('sanctum')->user();
-        $user = User::all();
-        $game = Game::create([
-            'slug' => $validatedData['slug'],
-            'title' => $validatedData['title'],
-            'description' => $validatedData['description'],
-            'thumbnail' => $validatedData['thumbnail'],
-            'upload_timestamp' => $validatedData['upload_timestamp'],
-            'author' => $validatedData['author'], // Assuming 'id' is the primary key of the user
-            'score_count' => $validatedData['score_count'],
-            'popular' => $validatedData['popular']
-        ]);
+        if ($user) {
+            // Создаем новую игру, привязывая ее к пользователю
+            $game = new Game();
+            $game->author = $user->id; // Привязываем игру к пользователю
+            $game->slug = $request->input('slug'); // Заполняем остальные данные игры
+            $game->description = $request->input('description');
+            $game->title = $request->input('title');
+            $game->thumbnail = $request->input('thumbnail');
+            $uploadTimestamp = $request->get('uploadTimestamp');
+            $game->score_count = $request->input("score_count");
+            $game->save();
 
-        // Save the game
-        $game->save();
+            return response()->json(['message' => 'Game created successfully'], 201);
+        } else {
+            return response()->json(['error' => 'User not found'], 404);
+        }
 
-        return response()->json(['status' => 'success', 'game' => $game]);
+
     }
-
 
 }
